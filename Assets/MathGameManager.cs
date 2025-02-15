@@ -23,29 +23,18 @@ public class MathGameManager : MonoBehaviour
     private int score = 0;
     private float timeRemaining;
     private bool isGameActive = true;
+    private int highScore = 0;
 
     void Start()
     {
         timeRemaining = gameTime;
         gameOverPanel.SetActive(false);
+        highScore = PlayerPrefs.GetInt("HighScore", 0);
+
         GenerateNewEquation();
         UpdateScoreDisplay();
     }
 
-    //void Update()
-    //{
-    //    if (isGameActive)
-    //    {
-    //        timeRemaining -= Time.deltaTime;
-    //        UpdateTimerDisplay();
-
-    //        if (timeRemaining <= 0)
-    //        {
-    //            timeRemaining = 0;
-    //            GameOver();
-    //        }
-    //    }
-    //}
     void Update()
     {
         if (isGameActive)
@@ -59,7 +48,7 @@ public class MathGameManager : MonoBehaviour
 
             UpdateTimerDisplay();
 
-            if (timeRemaining == 0) 
+            if (timeRemaining == 0)
             {
                 GameOver();
             }
@@ -166,7 +155,15 @@ public class MathGameManager : MonoBehaviour
     {
         isGameActive = false;
         gameOverPanel.SetActive(true);
-        finalScoreText.text = $"Final Score: {score}";
+
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetInt("HighScore", highScore);
+            PlayerPrefs.Save();
+        }
+
+        finalScoreText.text = $"Final Score: {score}\nHigh Score: {highScore}";
     }
 
     public void RestartGame()
@@ -182,6 +179,6 @@ public class MathGameManager : MonoBehaviour
     IEnumerator HideFeedbackAfterDelay()
     {
         yield return new WaitForSeconds(0.5f);
-        feedbackText.alpha = 0; 
+        feedbackText.alpha = 0;
     }
 }
