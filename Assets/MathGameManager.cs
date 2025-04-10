@@ -30,31 +30,23 @@ public class MathGameManager : MonoBehaviour
         timeRemaining = gameTime;
         gameOverPanel.SetActive(false);
         highScore = PlayerPrefs.GetInt("HighScore", 0);
-
         GenerateNewEquation();
         UpdateScoreDisplay();
     }
 
     void Update()
     {
-        if (isGameActive)
+        if (!isGameActive) return;
+
+        timeRemaining -= Time.deltaTime;
+        if (timeRemaining < 0) timeRemaining = 0;
+        UpdateTimerDisplay();
+
+        if (timeRemaining == 0)
         {
-            timeRemaining -= Time.deltaTime;
-
-            if (timeRemaining < 0)
-            {
-                timeRemaining = 0;
-            }
-
-            UpdateTimerDisplay();
-
-            if (timeRemaining == 0)
-            {
-                GameOver();
-            }
+            GameOver();
         }
     }
-
 
     void GenerateNewEquation()
     {
@@ -90,10 +82,6 @@ public class MathGameManager : MonoBehaviour
         equationText.text = $"{num1} {operation} {num2} = ?";
         currentCorrectAnswer = result;
 
-        // Generate wrong answers
-        // set to currently 3 answers
-        // change in the count field 
-        //messi goat
         List<int> answers = new List<int> { result };
         while (answers.Count < 2)
         {
@@ -102,7 +90,6 @@ public class MathGameManager : MonoBehaviour
                 answers.Add(wrongAnswer);
         }
 
-        // Shuffle answers
         for (int i = 0; i < answers.Count; i++)
         {
             int temp = answers[i];
@@ -111,23 +98,38 @@ public class MathGameManager : MonoBehaviour
             answers[randomIndex] = temp;
         }
 
-        // Assign answers to buttons
         for (int i = 0; i < answerButtons.Length; i++)
         {
-            answerButtons[i].GetComponentInChildren<TMP_Text>().text = answers[i].ToString();
-            int answer = answers[i];
-            answerButtons[i].onClick.RemoveAllListeners();
-            answerButtons[i].onClick.AddListener(() => CheckAnswer(answer));
+            TMP_Text text = answerButtons[i].GetComponentInChildren<TMP_Text>();
+            text.text = answers[i].ToString();
+
+            MathAnswerButton mathBtn = answerButtons[i].GetComponent<MathAnswerButton>();
+            if (mathBtn != null)
+            {
+                mathBtn.answerValue = answers[i];
+                mathBtn.gameManager = this;
+            }
+
+            AssignAnswer(answerButtons[i], answers[i]);
         }
     }
 
-    void CheckAnswer(int selectedAnswer)
+    void AssignAnswer(Button button, int value)
     {
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(() => SelectAnswer(value));
+    }
+
+    public void SelectAnswer(int selectedAnswer)
+    {
+        if (!isGameActive) return;
+
+        Debug.Log($"Button clicked with answer: {selectedAnswer}");
+
         if (selectedAnswer == currentCorrectAnswer)
         {
             score += 100;
-            UpdateScoreDisplay();
-            feedbackText.text = "Correct";
+            feedbackText.text = "Correct!";
             feedbackText.color = Color.green;
         }
         else
@@ -136,6 +138,7 @@ public class MathGameManager : MonoBehaviour
             feedbackText.color = Color.red;
         }
 
+        UpdateScoreDisplay();
         feedbackText.alpha = 1;
         StartCoroutine(HideFeedbackAfterDelay());
         GenerateNewEquation();
