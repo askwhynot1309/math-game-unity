@@ -6,7 +6,8 @@ public class MathAnswerButton : MonoBehaviour
     public MathGameManager gameManager;
     public AstraInputController inputController;
 
-    private bool isHandOver = false;
+    private bool isFootOver = false;
+    private bool hasClicked = false;
 
     private void Start()
     {
@@ -23,9 +24,9 @@ public class MathAnswerButton : MonoBehaviour
 
     private void HandleClick()
     {
-        if (isHandOver)
+        if (isFootOver && !hasClicked)
         {
-            Debug.Log("Activate");
+            hasClicked = true;
             gameManager.SelectAnswer(answerValue);
         }
     }
@@ -37,19 +38,18 @@ public class MathAnswerButton : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Hand"))
+        if (other.CompareTag("Foot"))
         {
-            Debug.Log("Hand entered button");
-            isHandOver = true;
+            isFootOver = true;
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Hand"))
+        if (other.CompareTag("Foot"))
         {
-            Debug.Log("Hand exited button");
-            isHandOver = false;
+            isFootOver = false;
+            hasClicked = false;
         }
     }
 }

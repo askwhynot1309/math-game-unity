@@ -310,6 +310,8 @@ GameObject:
   - component: {fileID: 308884019}
   - component: {fileID: 308884018}
   - component: {fileID: 308884017}
+  - component: {fileID: 308884020}
+  - component: {fileID: 308884021}
   m_Layer: 5
   m_Name: Restart
   m_TagString: Untagged
@@ -431,6 +433,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 308884015}
   m_CullTransparentMesh: 1
+--- !u!61 &308884020
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308884015}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.36956787, y: -0.13144684}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 299.59424, y: 199.34026}
+  m_EdgeRadius: 0
+--- !u!114 &308884021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308884015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5e191522445f864199e56f65a682ea2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &329790354
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,8 +560,8 @@ GameObject:
   - component: {fileID: 382514507}
   - component: {fileID: 382514509}
   m_Layer: 0
-  m_Name: HandFollower
-  m_TagString: Hand
+  m_Name: FootFollower
+  m_TagString: Foot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -519,15 +579,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputController: {fileID: 1099978823}
-  gameMinX: -8
-  gameMaxX: 8
-  gameMinY: -4.5
-  gameMaxY: 4.5
-  realMinX: -0.19
-  realMaxX: 0.35
-  realMinY: -0.14
-  realMaxY: 0.2
-  moveSpeed: 10
 --- !u!4 &382514505
 Transform:
   m_ObjectHideFlags: 0
@@ -2288,15 +2339,6 @@ MonoBehaviour:
   AutoRequestAndroidUsbPermission: 1
   TimeText: {fileID: 0}
   ToggleDebugText: {fileID: 0}
-  NewDepthFrameEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  NewColorFrameEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  NewNV21ColorFrameEvent:
-    m_PersistentCalls:
-      m_Calls: []
   NewBodyFrameEvent:
     m_PersistentCalls:
       m_Calls:
@@ -2312,15 +2354,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  NewMaskedColorFrameEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  NewColorizedBodyFrameEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  NewBodyMaskEvent:
-    m_PersistentCalls:
-      m_Calls: []
   ToggleDepth: {fileID: 0}
   ToggleColor: {fileID: 0}
   ToggleNV21Color: {fileID: 0}
