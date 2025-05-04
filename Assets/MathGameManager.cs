@@ -3,9 +3,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class MathGameManager : MonoBehaviour
 {
+    public AstraInputController inputController;
+    public GameObject restartButton;
+    private FootDetector restartDetector;
+
     [Header("UI Elements")]
     public TextMeshProUGUI equationText;
     public Button[] answerButtons;
@@ -14,6 +19,7 @@ public class MathGameManager : MonoBehaviour
     public GameObject gameOverPanel;
     public TextMeshProUGUI finalScoreText;
     public TextMeshProUGUI feedbackText;
+    public TextMeshProUGUI highscoreText;
 
     [Header("Game Settings")]
     public int maxNumber = 10;
@@ -23,15 +29,44 @@ public class MathGameManager : MonoBehaviour
     private int score = 0;
     private float timeRemaining;
     private bool isGameActive = true;
-    private int highScore = 0;
 
     void Start()
     {
+        SoundManager.Instance.PlayMusic();
         timeRemaining = gameTime;
         gameOverPanel.SetActive(false);
-        highScore = PlayerPrefs.GetInt("HighScore", 0);
         GenerateNewEquation();
         UpdateScoreDisplay();
+        StartCoroutine(GameAPI.Instance.GetHighScore(
+        score =>
+        {
+            Debug.Log("Fetched high score: " + score);
+            highscoreText.text = "Highscore: " + score.ToString();
+        },
+        error =>
+        {
+            Debug.LogError("Failed to fetch high score: " + error);
+        }));
+
+        if (inputController == null)
+        {
+            inputController = FindFirstObjectByType<AstraInputController>();
+        }
+        if (inputController != null)
+        {
+            inputController.OnClickEvent.AddListener(HandleFootClick);
+        }
+
+        restartDetector = restartButton.GetComponent<FootDetector>();
+    }
+
+    void HandleFootClick()
+    {
+        if (!isGameActive && restartDetector != null && restartDetector.IsFootOver && !restartDetector.hasClicked)
+        {
+            restartDetector.hasClicked = true;
+            RestartGame();
+        }
     }
 
     void Update()
@@ -124,6 +159,10 @@ public class MathGameManager : MonoBehaviour
     {
         if (!isGameActive) return;
 
+        foreach (Button button in answerButtons)
+        {
+            button.interactable = false;
+        }
         Debug.Log($"Button clicked with answer: {selectedAnswer}");
 
         if (selectedAnswer == currentCorrectAnswer)
@@ -131,17 +170,18 @@ public class MathGameManager : MonoBehaviour
             score += 100;
             feedbackText.text = "Correct!";
             feedbackText.color = Color.green;
+            SoundManager.Instance.PlayCorrect();
         }
         else
         {
             feedbackText.text = "Incorrect!";
             feedbackText.color = Color.red;
+            SoundManager.Instance.PlayWrong();
         }
 
         UpdateScoreDisplay();
         feedbackText.alpha = 1;
         StartCoroutine(HideFeedbackAfterDelay());
-        GenerateNewEquation();
     }
 
     void UpdateScoreDisplay()
@@ -159,29 +199,37 @@ public class MathGameManager : MonoBehaviour
         isGameActive = false;
         gameOverPanel.SetActive(true);
 
-        if (score > highScore)
-        {
-            highScore = score;
-            PlayerPrefs.SetInt("HighScore", highScore);
-            PlayerPrefs.Save();
-        }
+        StartCoroutine(GameAPI.Instance.PostPlayHistory(score,
+                    onSuccess: () => {
+                        Debug.Log("Score posted successfully.");
+                    },
+                    onError: (error) => {
+                        Debug.LogError($"Failed to post score: {error}");
+                    }));
 
-        finalScoreText.text = $"Final Score: {score}\nHigh Score: {highScore}";
+        finalScoreText.text = $"Final Score: {score}";
+
     }
 
     public void RestartGame()
     {
-        score = 0;
-        timeRemaining = gameTime;
-        isGameActive = true;
-        gameOverPanel.SetActive(false);
-        UpdateScoreDisplay();
-        GenerateNewEquation();
+        //score = 0;
+        //timeRemaining = gameTime;
+        //isGameActive = true;
+        //gameOverPanel.SetActive(false);
+        //UpdateScoreDisplay();
+        //GenerateNewEquation();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     IEnumerator HideFeedbackAfterDelay()
     {
         yield return new WaitForSeconds(0.5f);
         feedbackText.alpha = 0;
+        GenerateNewEquation();
+        foreach (Button button in answerButtons)
+        {
+            button.interactable = true;
+        }
     }
 }
