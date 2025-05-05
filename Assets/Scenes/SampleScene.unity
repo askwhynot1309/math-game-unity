@@ -669,7 +669,7 @@ MonoBehaviour:
   feedbackText: {fileID: 1181622858}
   highscoreText: {fileID: 313277306}
   maxNumber: 11
-  gameTime: 30
+  gameTime: 60
 --- !u!4 &329790356
 Transform:
   m_ObjectHideFlags: 0

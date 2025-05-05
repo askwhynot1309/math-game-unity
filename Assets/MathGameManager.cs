@@ -213,13 +213,24 @@ public class MathGameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        //score = 0;
-        //timeRemaining = gameTime;
-        //isGameActive = true;
-        //gameOverPanel.SetActive(false);
-        //UpdateScoreDisplay();
-        //GenerateNewEquation();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        score = 0;
+        timeRemaining = gameTime;
+        isGameActive = true;
+        gameOverPanel.SetActive(false);
+        UpdateScoreDisplay();
+        GenerateNewEquation();
+        SoundManager.Instance.PlayMusic();
+        StartCoroutine(GameAPI.Instance.GetHighScore(
+        score =>
+        {
+            Debug.Log("Fetched high score: " + score);
+            highscoreText.text = "Highscore: " + score.ToString();
+        },
+        error =>
+        {
+            Debug.LogError("Failed to fetch high score: " + error);
+        }));
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     IEnumerator HideFeedbackAfterDelay()
