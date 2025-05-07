@@ -1,9 +1,11 @@
-using Astra;
+﻿using Astra;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using Debug = UnityEngine.Debug;
 using Assets;
+using TMPro;
+
 
 [System.Serializable]
 public class NewBodyFrameEvent : UnityEvent<BodyStream, BodyFrame> { }
@@ -12,6 +14,7 @@ public class NewBodyFrameEvent : UnityEvent<BodyStream, BodyFrame> { }
 public class AstraController : MonoBehaviour
 {
     public bool AutoRequestAndroidUsbPermission = true;
+    public TextMeshProUGUI message;
 
     private Astra.StreamSet _streamSet;
     private Astra.StreamReader _readerDepth;
@@ -124,6 +127,7 @@ public class AstraController : MonoBehaviour
         catch (AstraException e)
         {
             //Debug.Log("AstraController: Couldn't initialize streams: " + e.ToString());
+            message.text = "Chưa kết nối thiết bị camera.";
             UninitializeStreams();
         }
     }
